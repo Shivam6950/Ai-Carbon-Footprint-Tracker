@@ -92,7 +92,7 @@ AC hours are collected for context but are not separately included in the formul
     try:
         client = Groq(api_key=api_key)
         result = client.chat.completions.create(
-            model=os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile"),
+            model=os.getenv("GROQ_MODEL", "openai/gpt-oss-120b"),
             messages=[
                 {"role": "system", "content": "You are a practical, concise sustainability advisor. Be realistic."},
                 {"role": "user", "content": prompt},
@@ -103,9 +103,9 @@ AC hours are collected for context but are not separately included in the formul
         answer = result.choices[0].message.content
         if answer and answer.strip():
             return answer.strip(), True
-    except Exception:
+    except Exception as e:
         # If API key, model, network, or free quota fails, never break the calculator.
-        pass
+        st.error(f"Groq AI error:{type(e).__name__}: {e}")
     return fallback_advice(data, breakdown) + \
         "\n\n*Hosted AI is unavailable or its free limit may have been reached; showing built-in advice instead.*", False
 
